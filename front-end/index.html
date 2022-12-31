@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>    
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+
+            color: rgb(143, 4, 207);
+            margin-top: 10px;
+        }
+
+        form {
+            margin: 10px auto;
+            width: 80vw;
+        }
+
+        .nome {
+            margin: 10px 0px;
+        }
+
+        .nome label {
+            margin-left: 10px;
+            color:  rgb(149, 20, 255);
+        }
+
+        #nome {
+            border-radius: 10px;
+            border: 1px solid rgb(149, 20, 255);
+            padding: 5px;
+            margin-top: 5px;
+
+            display: block;
+            width: 100%;
+        }
+
+        #nome:focus {
+            outline: none;
+        }
+
+        .body {
+            border-radius: 10px;
+            border: 1px solid rgb(149, 20, 255);
+            outline: none;
+
+            height: 60vh;
+        }
+
+        .chat-messages {
+            margin: 5px;
+            color: black;
+
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        .chat-messages strong {
+            color: rgba(131, 38, 218, 0.815);
+        }
+
+        .title {
+            text-align: center;
+            color: rgba(131, 38, 218, 0.815);
+
+            margin-top: 10px;
+        }
+
+        #mensagem {
+            display: block;
+            width: 100%;
+
+            border-radius: 10px;
+            border: 1px solid rgb(149, 20, 255);
+            outline: none;
+            
+            padding: 10px;
+        }
+
+        #submit {
+            display: block;
+            width: 100%;
+
+            background-color: rgb(222, 138, 255);
+            border-radius: 10px;
+            border: 1px solid rgb(149, 20, 255);
+            outline: none;
+            color: rgb(39, 3, 73);
+
+            margin-top: 10px;
+            padding: 10px;
+        }
+
+        #submit:hover {
+            background-color: rgb(201, 78, 250);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Chat with Socket.io</h1>
+    </header>
+    <form action="#">
+        <div class="nome">
+            <label for="nome">Nome :</label>
+            <input type="text" id="nome">
+        </div>
+        <div class="body" id="chat">
+
+        </div>
+        <h3 class="title">Digite sua mensagem: </h3>
+        <div class="submit">
+            <textarea id="mensagem" cols="30" rows="5"></textarea>
+            <input type="submit" id="submit" value="Enviar Mensagem">
+        </div>
+    </form>
+    
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        const submit = document.querySelector('#submit');
+        submit.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const name      = document.querySelector('#nome').value;
+            const message   = document.querySelector('#mensagem');
+
+            if (name && message.value) {
+                socket.emit('chat message', {name, message: message.value});
+            }
+
+            message.value = '';            
+        });
+
+        socket.on('messages', (response) => {
+            const chat = document.querySelector('#chat');
+
+            let html = '';
+            response.forEach((data) => {
+                html += `
+                <div class="chat-messages"><strong>${data.name}: </strong>${data.message}</div>
+                `;
+            });
+
+            chat.innerHTML = html;            
+        });
+
+    </script>
+</body>
+</html>
